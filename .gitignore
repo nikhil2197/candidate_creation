@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+env/
+venv/
+*.mp4
+manifest.json
+concat_list.txt
+# Ignore input and output folders
+input/
+output/

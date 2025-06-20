@@ -1,0 +1,8 @@
+camera: "D1"
+date: "2025-06-20"
+input_folder: "./input"
+output_folder: "./output"
+start_time: "09:00"
+end_time: "12:00"
+chunk_length: 300
+reencode: false
