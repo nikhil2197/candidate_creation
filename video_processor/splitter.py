@@ -36,7 +36,8 @@ def split_into_chunks(
         chunk_path = Path(output_folder) / chunk_name
         cmd = ["ffmpeg", "-y", "-ss", str(offset), "-i", str(video_file), "-t", str(this_duration)]
         if not reencode:
-            cmd += ["-c", "copy"]
+            # copy video stream, re-encode audio to AAC for MP4 compatibility
+            cmd += ["-c:v", "copy", "-c:a", "aac"]
         cmd += [str(chunk_path)]
         result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         if result.returncode != 0:

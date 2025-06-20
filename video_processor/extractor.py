@@ -52,7 +52,8 @@ def extract_time_segment(
             piece_path = Path(tmpdir) / f"{file_start.strftime('%Y%m%d%H%M%S')}_{int(offset)}_{int(seg_duration)}.mp4"
             cmd = ["ffmpeg", "-y", "-ss", str(offset), "-i", file_path, "-t", str(seg_duration)]
             if not reencode:
-                cmd += ["-c", "copy"]
+                # copy video stream, re-encode audio to AAC for MP4 compatibility
+                cmd += ["-c:v", "copy", "-c:a", "aac"]
             cmd += [str(piece_path)]
             result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             if result.returncode != 0:
@@ -66,9 +67,10 @@ def extract_time_segment(
         with open(concat_file, "w") as cf:
             for p in pieces:
                 cf.write(f"file '{p}'\n")
+        # concatenate segments; copy video and re-encode audio by default
         cmd = ["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(concat_file)]
         if not reencode:
-            cmd += ["-c", "copy"]
+            cmd += ["-c:v", "copy", "-c:a", "aac"]
         cmd += [output_file]
         result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         if result.returncode != 0:
