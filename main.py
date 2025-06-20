@@ -26,17 +26,42 @@ def main():
         logging.error(f"Failed to load config: {e}")
         sys.exit(1)
 
+    # Read camera and date from config (optional); autodetect if missing
     camera = cfg.get("camera")
-    if not camera:
-        logging.error("camera not specified in config")
-        sys.exit(1)
     date_str = cfg.get("date")
-    if not date_str:
-        logging.error("date not specified in config")
-        sys.exit(1)
+    # Determine input folder for autodetection
+    input_folder = cfg.get("input_folder", ".")
+    # Autodetect camera and/or date based on input filenames if needed
+    if not camera or not date_str:
+        import re
+        cameras = set()
+        dates = set()
+        for p in Path(input_folder).iterdir():
+            if not p.is_file():
+                continue
+            m = re.match(r"^(.+?)_(\d{14})\.mp4$", p.name)
+            if m:
+                cameras.add(m.group(1))
+                ts = m.group(2)
+                dates.add(f"{ts[0:4]}-{ts[4:6]}-{ts[6:8]}")
+        if not camera:
+            if len(cameras) == 1:
+                camera = cameras.pop()
+                logging.info(f"Auto-detected camera: {camera}")
+            else:
+                logging.error(f"Could not autodetect camera, found: {cameras}")
+                sys.exit(1)
+        if not date_str:
+            if len(dates) == 1:
+                date_str = dates.pop()
+                logging.info(f"Auto-detected date: {date_str}")
+            else:
+                logging.error(f"Could not autodetect date, found: {dates}")
+                sys.exit(1)
+    # Parse and validate date
     try:
         dt_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-    except ValueError:
+    except Exception:
         logging.error("Invalid date format, expected YYYY-MM-DD")
         sys.exit(1)
 

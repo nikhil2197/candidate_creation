@@ -23,10 +23,10 @@ pip install -r requirements.txt
 ```
 
 ## Configuration
-See `config.yaml` for an example configuration:
+See `config.yaml` for an example configuration (camera and date are optional; auto-detected from input filenames):
 ```yaml
-camera: "D1"               # Camera identifier
-date: "2025-06-20"        # Date to process (YYYY-MM-DD)
+camera: "D1"               # Camera identifier (optional; auto-detected if omitted)
+date: "2025-06-20"        # Date to process (YYYY-MM-DD) (optional; auto-detected if omitted)
 input_folder: "./input"    # Directory of source MP4 files
 output_folder: "./output"  # Directory for combined and chunk outputs
 start_time: "09:00"        # Extraction window start (HH:MM)
